@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  "exclude": ["node_modules", "dist"],
   "include": [
     "**/*.ts",
     "**/*.tsx",
