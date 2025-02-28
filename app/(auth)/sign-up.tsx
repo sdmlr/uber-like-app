@@ -5,11 +5,74 @@ import { useState } from "react";
 import CustomButton from "@/components/CustomButton";
 import { Link } from "expo-router";
 import OAuth from "@/components/OAuth";
+import { useSignUp } from "@clerk/clerk-expo";
 
 const SignUp = () => {
+  const { isLoaded, signUp, setActive } = useSignUp();
+
   const [form, setform] = useState({ name: "", email: "", password: "" });
 
-  const onSignUpPress = async () => {};
+  const [verification, setVerification] = useState({
+    state: "success",
+    error: "",
+    code: "",
+  });
+
+  const onSignUpPress = async () => {
+    if (!isLoaded) return;
+
+    // Start sign-up process using email and password provided
+    try {
+      await signUp.create({
+        emailAddress: form.email,
+        password: form.password,
+      });
+
+      // Send user an email with verification code
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+      // Set 'pendingVerification' to true to display second form
+      // and capture OTP code
+      setVerification({
+        ...verification,
+        state: "pending",
+      });
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
+  // Handle submission of verification form
+  const onVerifyPress = async () => {
+    if (!isLoaded) return;
+
+    try {
+      // Use the code the user provided to attempt verification
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code: verification.code,
+      });
+
+      // If verification was completed, set the session to active
+      if (signUpAttempt.status === "complete") {
+        // TODO: Create a database user!
+
+        await setActive({ session: signUpAttempt.createdSessionId });
+        setVerification({ ...verification, state: "success" });
+      } else {
+        setVerification({
+          ...verification,
+          error: "Verification failed",
+          state: "failed",
+        });
+      }
+    } catch (err) {
+      setVerification({
+        ...verification,
+        error: err.errors[0].longMessage,
+        state: "failed",
+      });
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-white">
@@ -51,18 +114,26 @@ const SignUp = () => {
             className="mt-6"
           />
 
-           <OAuth /> 
+          <OAuth />
 
           <Link
             href="/sign-in"
             className="text-lg text-center text-general-200 mt-10"
           >
-            <Text>Already have an account?  </Text>
+            <Text>Already have an account? </Text>
             <Text className="text-primary-500">Log In</Text>
           </Link>
         </View>
 
         {/*  Verification Modal */}
+        <ReactNativeModal isVisible={verification.state === "success"}>
+          <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
+            <Image
+              source={images.check}
+              className="w-[110px] h-[110px] mx-auto my-5"
+            />
+          </View>
+        </ReactNativeModal>
       </View>
     </ScrollView>
   );
