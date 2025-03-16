@@ -7,6 +7,7 @@ import { Link, router } from "expo-router";
 import { useSignUp } from "@clerk/clerk-expo";
 import OAuth from "@/components/OAuth";
 import ReactNativeModal from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -57,7 +58,14 @@ const SignUp = () => {
       // If verification was completed, set the session to active
       // and redirect the user
       if (signUpAttempt.status === "complete") {
-        // TODO: Create a database user!
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: signUpAttempt.createdUserId,
+          }),
+        });
 
         await setActive({ session: signUpAttempt.createdSessionId });
         setVerification({ ...verification, state: "success" });
@@ -185,8 +193,9 @@ const SignUp = () => {
             <CustomButton
               title="Browse Home"
               onPress={() => {
-                setShowSuccessModal(false)
-                router.push("/(root)/(tabs)/home")}}
+                setShowSuccessModal(false);
+                router.push("/(root)/(tabs)/home");
+              }}
               className="mt-5"
             />
           </View>
