@@ -1,6 +1,6 @@
 import { icons } from "@/constants";
 import { calculateRegion, generateMarkersFromData } from "@/lib/map";
-import { useLocationStore, useDriveStore } from "@/store";
+import { useLocationStore, useDriverStore } from "@/store";
 import { MarkerData } from "@/types/type";
 import { useEffect, useState } from "react";
 import { Text, View } from "react-native";
@@ -60,7 +60,7 @@ const Map = () => {
     destinationLatitude,
     destinationLongitude,
   } = useLocationStore();
-  const { selectedDriver, setDrivers } = useDriveStore;
+  const { selectedDriver, setDrivers } = useDriverStore();
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   const region = calculateRegion({
@@ -73,7 +73,6 @@ const Map = () => {
   useEffect(() => {
     if (Array.isArray(drivers)) {
       if (!userLatitude || !userLongitude) return;
-
       const newMarkers = generateMarkersFromData({
         data: drivers,
         userLatitude,
@@ -92,7 +91,7 @@ const Map = () => {
       mapType="mutedStandard"
       showsPointsOfInterest={false}
       initialRegion={region}
-      //   showsUserLocation={true}
+      showsUserLocation={true}
       userInterfaceStyle="light"
     >
       {markers.map((marker) => (
