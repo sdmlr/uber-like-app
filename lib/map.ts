@@ -64,6 +64,14 @@ export const calculateRegion = ({
   const latitude = (userLatitude + destinationLatitude) / 2;
   const longitude = (userLongitude + destinationLongitude) / 2;
 
+  console.log(
+    "✅ Calculated map region:",
+    latitude,
+    longitude,
+    latitudeDelta,
+    longitudeDelta
+  );
+
   return {
     latitude,
     longitude,
