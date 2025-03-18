@@ -1,11 +1,23 @@
-import { Text, View } from "react-native"
+import { Text, View } from "react-native";
+import MapView, { PROVIDER_DEFAULT } from "react-native-maps";
 
 const Map = () => {
-    return (
-        <View>
-            <Text>Map</Text>
-        </View>
-    )
-}
+  // const region = {}
 
-export default Map
+  return (
+    <MapView
+      provider={PROVIDER_DEFAULT}
+      className="w-full h-full rounded-2xl"
+      tintColor="black"
+      mapType="mutedStandard"
+      showsPointsOfInterest={false}
+      //   initialRegion={region}
+      showsUserLocation={true}
+      userInterfaceStyle="light"
+    >
+      <Text>Map</Text>
+    </MapView>
+  );
+};
+
+export default Map;
