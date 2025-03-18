@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
+import { router } from "expo-router";
 
 const recentRides = [
   {
@@ -132,9 +133,17 @@ export default function Page() {
 
   const handleSignOut = () => {};
 
-  const handleDestinationPress = () => {};
+  const handleDestinationPress = (location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  }) => {
+    setDestinationLocation(location)
 
-  useEffect(() => {
+    router.push("/(root)/find-ride")
+  };
+
+  useEffect(() => { 
     const requestLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
 
