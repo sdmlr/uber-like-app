@@ -79,7 +79,7 @@ const BookRide = () => {
             <View className="flex flex-row items-center justify-start mt-3 border-t border-b border-general-700 w-full py-3">
               <Image source={icons.to} className="w-6 h-6" />
               <Text className="text-lg font-Jakarta ml-2">
-                {destinationAddress}
+                {userAddress}
               </Text>
             </View>
 
