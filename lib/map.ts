@@ -1,6 +1,6 @@
 import { Driver, MarkerData } from "@/types/type";
 
-const RoutesAPI = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+const routesAPI = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
 export const generateMarkersFromData = ({
   data,
@@ -64,14 +64,6 @@ export const calculateRegion = ({
   const latitude = (userLatitude + destinationLatitude) / 2;
   const longitude = (userLongitude + destinationLongitude) / 2;
 
-  console.log(
-    "✅ Calculated map region:",
-    latitude,
-    longitude,
-    latitudeDelta,
-    longitudeDelta
-  );
-
   return {
     latitude,
     longitude,
@@ -103,19 +95,106 @@ export const calculateDriverTimes = async ({
 
   try {
     const timesPromises = markers.map(async (marker) => {
+      // Request to compute route from marker to user using the new Routes API
       const responseToUser = await fetch(
-        `https://maps.googleapis.com/maps/api/directions/json?origin=${marker.latitude},${marker.longitude}&destination=${userLatitude},${userLongitude}&key=${RoutesAPI}`
+        "https://routes.googleapis.com/directions/v2:computeRoutes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": routesAPI,
+            "X-Goog-FieldMask": "routes.duration",
+          },
+          body: JSON.stringify({
+            origin: {
+              location: {
+                latLng: {
+                  latitude: marker.latitude,
+                  longitude: marker.longitude,
+                },
+              },
+            },
+            destination: {
+              location: {
+                latLng: {
+                  latitude: userLatitude,
+                  longitude: userLongitude,
+                },
+              },
+            },
+            travelMode: "DRIVE",
+            routingPreference: "TRAFFIC_AWARE",
+            computeAlternativeRoutes: false,
+            routeModifiers: {
+              avoidTolls: false,
+              avoidHighways: false,
+              avoidFerries: false,
+            },
+            languageCode: "en-US",
+            units: "IMPERIAL",
+          }),
+        }
       );
       const dataToUser = await responseToUser.json();
-      const timeToUser = dataToUser.routes[0].legs[0].duration.value; // Time in seconds
+      console.log("API response for timeToUser:", dataToUser);
+      if (!dataToUser.routes || dataToUser.routes.length === 0) {
+        throw new Error("No route found for marker to user");
+      }
+      // Duration comes as a string like "165s". Remove non-digits and parse to number.
+      const durationStrUser = dataToUser.routes[0].duration;
+      const timeToUser = parseInt(durationStrUser.replace(/[^0-9]/g, ""), 10);
 
+      // Request to compute route from user to destination
       const responseToDestination = await fetch(
-        `https://maps.googleapis.com/maps/api/directions/json?origin=${userLatitude},${userLongitude}&destination=${destinationLatitude},${destinationLongitude}&key=${RoutesAPI}`
+        "https://routes.googleapis.com/directions/v2:computeRoutes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": routesAPI,
+            "X-Goog-FieldMask": "routes.duration",
+          },
+          body: JSON.stringify({
+            origin: {
+              location: {
+                latLng: {
+                  latitude: userLatitude,
+                  longitude: userLongitude,
+                },
+              },
+            },
+            destination: {
+              location: {
+                latLng: {
+                  latitude: destinationLatitude,
+                  longitude: destinationLongitude,
+                },
+              },
+            },
+            travelMode: "DRIVE",
+            routingPreference: "TRAFFIC_AWARE",
+            computeAlternativeRoutes: false,
+            routeModifiers: {
+              avoidTolls: false,
+              avoidHighways: false,
+              avoidFerries: false,
+            },
+            languageCode: "en-US",
+            units: "IMPERIAL",
+          }),
+        }
       );
       const dataToDestination = await responseToDestination.json();
-      const timeToDestination =
-        dataToDestination.routes[0].legs[0].duration.value; // Time in seconds
+      if (!dataToDestination.routes || dataToDestination.routes.length === 0) {
+        throw new Error("No route found from user to destination");
+      }
+      const durationStrDestination = dataToDestination.routes[0].duration;
+      const timeToDestination = parseInt(
+        durationStrDestination.replace(/[^0-9]/g, ""),
+        10
+      );
 
+      // Calculate total time in minutes and a price based on that time
       const totalTime = (timeToUser + timeToDestination) / 60; // Total time in minutes
       const price = (totalTime * 0.5).toFixed(2); // Calculate price based on time
 
