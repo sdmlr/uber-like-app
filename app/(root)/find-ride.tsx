@@ -7,10 +7,14 @@ import { router } from "expo-router";
 import { Text, View } from "react-native";
 
 const FindRide = () => {
-  const { userAddress, destinationAddress, setUserLocation } =
-    useLocationStore();
+  const {
+    userAddress,
+    destinationAddress,
+    setDestinationLocation,
+    setUserLocation,
+  } = useLocationStore();
   return (
-    <RideLayout title="Ride">
+    <RideLayout title="Ride" snapPoints={["85%"]}>
       <View className="my-3">
         <Text className="text-lg font-JakartaSemiBold mb-3">From</Text>
         <GoogleTextInput
@@ -34,8 +38,8 @@ const FindRide = () => {
       </View>
 
       <CustomButton
-        title="Find now"
-        onPress={() => router.push("/(root)/confirm-ride")}
+        title="Find Now"
+        onPress={() => router.push(`/(root)/confirm-ride`)}
         className="mt-5"
       />
     </RideLayout>
