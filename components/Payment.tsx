@@ -61,11 +61,10 @@ const Payment = ({
           customer_id: customer,
         }),
       });
-      if(result.client_secret) {
+      if (result.client_secret) {
         // ride/create
       }
     }
-
   };
 
   const initializePaymentSheet = async () => {
@@ -108,7 +107,6 @@ const Payment = ({
       setSuccess(true);
       Alert.alert("Success", "Your order is confirmed!");
     }
-    console.log("hello from paymentsheet");
   };
 
   return (
