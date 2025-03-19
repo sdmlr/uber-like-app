@@ -1,3 +1,4 @@
+import Payment from "@/components/Payment";
 import RideLayout from "@/components/RideLayout";
 import { icons } from "@/constants";
 import { formatTime } from "@/lib/utils";
@@ -82,7 +83,7 @@ const BookRide = () => {
           </View>
         </View>
 
-        
+        <Payment />
       </>
     </RideLayout>
   );
