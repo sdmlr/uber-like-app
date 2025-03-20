@@ -75,7 +75,7 @@ const Payment = ({
           );
 
           if (paymentIntent.client_secret) {
-            const { result } = await fetchAPI("/(api)/(stripe)pay", {
+            const { result } = await fetchAPI("/(api)/(stripe)/pay", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
