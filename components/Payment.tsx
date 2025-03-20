@@ -81,7 +81,7 @@ const Payment = ({
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
-                payment_method_id: paymentMethod.id,
+                payment_method: paymentMethod.id,
                 payment_intent_id: paymentIntent.id,
                 customer_id: customer,
               }),
