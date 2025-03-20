@@ -8,9 +8,9 @@ import {
 import { useLocationStore, useDriverStore } from "@/store";
 import { Driver, MarkerData } from "@/types/type";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Text, View, Platform } from "react-native";
 import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
-import {MapViewRoute} from 'react-native-maps-routes';
+import { MapViewRoute } from "react-native-maps-routes";
 
 const Map = () => {
   const { data: drivers, loading, error } = useFetch<Driver[]>("/(api)/driver");
@@ -107,20 +107,22 @@ const Map = () => {
             title="Destination"
             image={icons.pin}
           />
-
-          <MapViewRoute
-            origin={{
-              latitude: userLatitude!,
-              longitude: userLongitude!,
-            }}
-            destination={{
-              latitude: destinationLatitude,
-              longitude: destinationLongitude,
-            }}
-            apiKey={process.env.EXPO_PUBLIC_GOOGLE_API_KEY}
-            strokeColor="#0286ff"
-            strokeWidth={4}
-          />
+          {/* Only render MapViewRoute on non-web platforms */}
+          {Platform.OS !== "web" && (
+            <MapViewRoute
+              origin={{
+                latitude: userLatitude!,
+                longitude: userLongitude!,
+              }}
+              destination={{
+                latitude: destinationLatitude,
+                longitude: destinationLongitude,
+              }}
+              apiKey={process.env.EXPO_PUBLIC_GOOGLE_API_KEY}
+              strokeColor="#0286ff"
+              strokeWidth={4}
+            />
+          )}
         </>
       )}
     </MapView>
