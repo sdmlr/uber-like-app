@@ -58,78 +58,78 @@ const Payment = ({
           currencyCode: "GBP",
         },
         confirmHandler: async (paymentMethod, _, intentCreationCallback) => {
-          const { paymentIntent, customer } = await fetchAPI(
-            "/(api)/(stripe)/create",
-            {
+          try {
+            // 1. Create PaymentIntent on your server
+            const createResponse = await fetchAPI("/(api)/(stripe)/create", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 name: fullName || email.split("@")[0],
                 email: email,
                 amount: amount,
                 paymentMethodId: paymentMethod.id,
               }),
-            }
-          );
+            });
 
-          if (paymentIntent.client_secret) {
-            const { result } = await fetchAPI("/(api)/(stripe)/pay", {
+            const { paymentIntent, customer } = createResponse;
+            if (!paymentIntent || !paymentIntent.client_secret) {
+              console.error(
+                "Missing paymentIntent or client_secret in create response:",
+                createResponse
+              );
+              return;
+            }
+
+            // 2. Confirm the PaymentIntent on your server
+            const payResponse = await fetchAPI("/(api)/(stripe)/pay", {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                payment_method: paymentMethod.id,
+                payment_method: paymentMethod.id, // Must be 'payment_method'
                 payment_intent_id: paymentIntent.id,
                 customer_id: customer,
               }),
             });
 
-            if (result.client_secret) {
-              await fetchAPI("/(api)/ride/create", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  origin_address: userAddress,
-                  destination_address: destinationAddress,
-                  origin_latitude: userLatitude,
-                  origin_longitude: userLongitude,
-                  destination_latitude: destinationLatitude,
-                  destination_longitude: destinationLongitude,
-                  ride_time: rideTime.toFixed(0),
-                  fare_price: parseInt(amount) * 100,
-                  payment_status: "paid",
-                  driver_id: driverId,
-                  user_id: userId,
-                }),
-              });
-
-              intentCreationCallback({
-                clientSecret: result.client_secret,
-              });
+            const { result } = payResponse;
+            if (!result || !result.client_secret) {
+              console.error(
+                "Missing result or client_secret in pay response:",
+                payResponse
+              );
+              return;
             }
+
+            // 3. Create the ride on your server
+            const rideResponse = await fetchAPI("/(api)/ride/create", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                origin_address: userAddress,
+                destination_address: destinationAddress,
+                origin_latitude: userLatitude,
+                origin_longitude: userLongitude,
+                destination_latitude: destinationLatitude,
+                destination_longitude: destinationLongitude,
+                ride_time: rideTime.toFixed(0),
+                fare_price: parseInt(amount) * 100,
+                payment_status: "paid",
+                driver_id: driverId,
+                user_id: userId,
+              }),
+            });
+
+            // 4. Notify Payment Sheet with the updated client secret
+            intentCreationCallback({ clientSecret: result.client_secret });
+          } catch (error) {
+            console.error("Error in confirmHandler:", error);
           }
         },
       },
-      returnURL: 'myapp://book-ride',
-
-      // customerId: customer,
-      // customerEphemeralKeySecret: ephemeralKey,
-      // paymentIntentClientSecret: paymentIntent,
-
-      // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
-      //methods that complete payment after a delay, like SEPA Debit and Sofort.
-      // allowsDelayedPaymentMethods: true,
-      // defaultBillingDetails: {
-      //   name: "Jane Doe",
-      // },
+      returnURL: "myapp://book-ride",
     });
     if (error) {
-      console.log(error);
+      console.log("Error initializing payment sheet:", error);
     }
   };
 

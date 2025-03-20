@@ -136,7 +136,6 @@ export const calculateDriverTimes = async ({
         }
       );
       const dataToUser = await responseToUser.json();
-      console.log("API response for timeToUser:", dataToUser);
       if (!dataToUser.routes || dataToUser.routes.length === 0) {
         throw new Error("No route found for marker to user");
       }
