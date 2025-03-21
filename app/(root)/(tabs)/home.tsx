@@ -20,14 +20,14 @@ import { useFetch } from "@/lib/fetch";
 
 export default function Page() {
   const { setUserLocation, setDestinationLocation } = useLocationStore();
+  const { signOut } = useAuth();
   const { user } = useUser();
-  const { signedOut } = useAuth();
   const { data: recentRides, loading } = useFetch(`/(api)/ride/${user?.id}`);
 
   const [hasPermissions, setHasPermissions] = useState(false);
 
   const handleSignOut = () => {
-    signedOut();
+    signOut();
 
     router.replace("/(auth)/sign-in");
   };
