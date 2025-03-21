@@ -141,7 +141,7 @@ const Payment = ({
       Alert.alert(`Error code: ${error.code}`, error.message);
     } else {
       setSuccess(true);
-      Alert.alert("Success", "Your order is confirmed!");
+      // Alert.alert("Success", "Your order is confirmed!");
     }
   };
 
