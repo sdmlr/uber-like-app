@@ -18,12 +18,9 @@ const OAuth = () => {
       const result = await googleOAuth(startSSOFlow);
 
       // If sign in was successful, set the active session
-      if (result.code === 'session_exists') {
-        Alert.alert("Sucess", 'Session Exists. Redirecting to home page')
-        router.push('/(root)/(tabs)/home')
+      if (result.code === "session_exists" || result.code === "success") {
+        router.push("/(root)/(tabs)/home");
       }
-
-      Alert.alert(result.success ? 'Success' : 'Error', result.message)
     } catch (err) {
       // See https://clerk.com/docs/custom-flows/error-handling
       // for more info on error handling
