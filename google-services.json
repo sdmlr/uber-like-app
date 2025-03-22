@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "985927501621",
+    "project_id": "uber-like-app-cf602",
+    "storage_bucket": "uber-like-app-cf602.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985927501621:android:ec92723b7bac3d6850ee7c",
+        "android_client_info": {
+          "package_name": "com.sdmlr.uberlikeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDP23S9KYDRW5YpTLjp6xDXqczKteEuH6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

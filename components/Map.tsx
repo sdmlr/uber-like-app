@@ -9,7 +9,7 @@ import { useLocationStore, useDriverStore } from "@/store";
 import { Driver, MarkerData } from "@/types/type";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View, Platform } from "react-native";
-import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { MapViewRoute } from "react-native-maps-routes";
 
 const Map = () => {
@@ -73,13 +73,13 @@ const Map = () => {
 
   return (
     <MapView
-      provider={PROVIDER_DEFAULT}
+      provider={PROVIDER_GOOGLE}
       className="w-full h-full rounded-2xl"
       tintColor="black"
       mapType="mutedStandard"
       showsPointsOfInterest={false}
       initialRegion={region}
-      // showsUserLocation={true}
+      showsUserLocation={true}
       userInterfaceStyle="light"
     >
       {markers.map((marker) => (
