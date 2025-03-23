@@ -35,7 +35,10 @@ export default ({ config }) => ({
     output: "static",
     favicon: "./assets/images/favicon.png",
   },
-  plugins: [["expo-router", { origin: "https://uber.com/" }]],
+  plugins: [
+    ["expo-router", { origin: "https://uber.com/" }],
+    // "expo-edge-functions",
+  ],
   experiments: {
     typedRoutes: true,
   },

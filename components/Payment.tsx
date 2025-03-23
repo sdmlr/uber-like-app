@@ -60,7 +60,7 @@ const Payment = ({
         confirmHandler: async (paymentMethod, _, intentCreationCallback) => {
           try {
             // 1. Create PaymentIntent on your server
-            const createResponse = await fetchAPI("/(api)/(stripe)/create", {
+            const createResponse = await fetchAPI("/api/stripe-create", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -81,7 +81,7 @@ const Payment = ({
             }
 
             // 2. Confirm the PaymentIntent on your server
-            const payResponse = await fetchAPI("/(api)/(stripe)/pay", {
+            const payResponse = await fetchAPI("/api/stripe-pay", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -101,7 +101,7 @@ const Payment = ({
             }
 
             // 3. Create the ride on your server
-            const rideResponse = await fetchAPI("/(api)/ride/create", {
+            const rideResponse = await fetchAPI("/api/ride-create", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

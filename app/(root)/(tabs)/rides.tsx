@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const Rides = () => {
   const { user } = useUser();
-  const { data: recentRides, loading } = useFetch<Ride[]>(`/(api)/ride/${user?.id}`);
+  const { data: recentRides, loading } = useFetch<Ride[]>(`/api/ride-id/${id}`);
 
   return (
     <SafeAreaView>

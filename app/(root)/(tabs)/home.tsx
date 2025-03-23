@@ -22,7 +22,8 @@ export default function Page() {
   const { setUserLocation, setDestinationLocation } = useLocationStore();
   const { signOut } = useAuth();
   const { user } = useUser();
-  const { data: recentRides, loading } = useFetch(`/(api)/ride/${user?.id}`);
+  const userId = user?.id
+  const { data: recentRides, loading } = useFetch(`/api/ride-id/${userId}`);
 
   const [hasPermissions, setHasPermissions] = useState(false);
 
